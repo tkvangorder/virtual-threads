@@ -34,6 +34,7 @@ public class TestHarness {
     //Wait for them all to complete
     CompletableFuture.allOf(futures).join();
     recordTiming(start);
+
   }
 
   public void recordTiming(long start) {

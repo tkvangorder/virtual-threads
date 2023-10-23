@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class SleepyController {
 
   @GetMapping("/sleepy")
-  String sleepResponse() {
+  public String sleepResponse() {
     try {
-      Thread.sleep(10000);
+      Thread.sleep(2000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
