@@ -1,6 +1,6 @@
 <configuration>
 
-  <conversionRule conversionWord="threadId" converterClass="org.threading.imperative.ThreadIdConverter" />
+  <conversionRule conversionWord="threadId" converterClass="org.threading.utils.ThreadIdConverter" />
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->

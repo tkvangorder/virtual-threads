@@ -1,4 +1,4 @@
-package org.threading.imperative;
+package org.threading.utils;
 
 import lombok.extern.slf4j.Slf4j;
 

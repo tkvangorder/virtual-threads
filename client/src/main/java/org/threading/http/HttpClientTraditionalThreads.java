@@ -1,6 +1,8 @@
-package org.threading.imperative;
+package org.threading.http;
 
 import lombok.extern.slf4j.Slf4j;
+import org.threading.utils.TestHarness;
+import org.threading.utils.Utils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -8,33 +10,30 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Slf4j
-public class HttpClientImperative {
+public class HttpClientTraditionalThreads {
+
+  private static final HttpClient httpClient = HttpClient.newBuilder()
+      .build();
+  private static final HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create("http://localhost:8080/sleepy"))
+      .build();
+
 
   public static void main(String[] args) {
     Utils.waitForPrompt("Press enter to start Imperative HTTP Client Tests");
 
     try (ExecutorService executorService = Utils.traditionalUnboundedExecutorService()) {
       TestHarness.run("Http Requests Imperative, Unbounded Threads", executorService,
-          2000, HttpClientImperative::httpClientTask);
+          500, HttpClientTraditionalThreads::httpClientTask);
     }
 
-    try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
-      TestHarness.run("Http Requests Imperative, Virtual Threads", executorService,
-          2000, HttpClientImperative::httpClientTask);
-    }
-
+    httpClient.close();
     Utils.waitForPrompt("Press enter to exit");
   }
-
   public static void httpClientTask() {
-    try (HttpClient httpClient = getHttpClient()) {
-
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create("http://localhost:8080/sleepy"))
-          .build();
+    try {
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
       log.info(response.body());
     } catch (IOException | InterruptedException e) {
@@ -42,9 +41,5 @@ public class HttpClientImperative {
     }
   }
 
-  public static HttpClient getHttpClient() {
-    return HttpClient.newBuilder()
-        .version(HttpClient.Version.HTTP_1_1)
-        .build();
-  }
+
 }
