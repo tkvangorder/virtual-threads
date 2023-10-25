@@ -22,15 +22,11 @@ public class HttpClientVirtualThreads {
       .build();
 
   public static void main(String[] args) {
-    Utils.waitForPrompt("Press enter to start virtual threading HTTP Client Tests");
-
     try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
       TestHarness.run("Http Requests Virtual Threads", executorService,
-          2000, HttpClientVirtualThreads::httpClientTask);
+          1999, HttpClientVirtualThreads::httpClientTask);
     }
-
-      httpClient.close();
-      Utils.waitForPrompt("Press enter to exit");
+    httpClient.close();
   }
 
   public static void httpClientTask() {

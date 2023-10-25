@@ -22,15 +22,12 @@ public class HttpClientTraditionalThreads {
 
 
   public static void main(String[] args) {
-    Utils.waitForPrompt("Press enter to start Imperative HTTP Client Tests");
-
     try (ExecutorService executorService = Utils.traditionalUnboundedExecutorService()) {
       TestHarness.run("Http Requests Imperative, Unbounded Threads", executorService,
           500, HttpClientTraditionalThreads::httpClientTask);
     }
 
     httpClient.close();
-    Utils.waitForPrompt("Press enter to exit");
   }
   public static void httpClientTask() {
     try {

@@ -9,7 +9,7 @@ public class SleepyController {
   @GetMapping("/sleepy")
   public String sleepResponse() {
     try {
-      Thread.sleep(1000);
+      Thread.sleep(2000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

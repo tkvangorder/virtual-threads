@@ -12,11 +12,7 @@ public class HttpClientReactive {
   private static final WebClient client = WebClient.builder().build();
 
   public static void main(String[] args) {
-    Utils.waitForPrompt("Press enter to start Imperative HTTP Client Tests");
-
-    ReactiveTestHarness.run("Reactive HTTP Client", 1000, HttpClientReactive::makeSleepyCall);
-
-    Utils.waitForPrompt("Press enter to exit");
+    ReactiveTestHarness.run("Reactive HTTP Client", 500, HttpClientReactive::makeSleepyCall);
   }
 
 
