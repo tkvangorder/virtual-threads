@@ -36,11 +36,11 @@ jobs:
       - name: Prepare version
         id: prepare-version
         run: |
-          if test -z "${{github.event.inputs.version}}"
+          if test -z "${{inputs.version}}"
           then
           mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false
           else
-          mvn versions:set -DnewVersion=${{github.event.inputs.version}} -DgenerateBackupPoms=false
+          mvn versions:set -DnewVersion=${{inputs.version}} -DgenerateBackupPoms=false
           fi          
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
           echo "semantic-version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_OUTPUT
