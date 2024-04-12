@@ -10,7 +10,7 @@ name: Java Prepare Release
 on:
   workflow_call:
     inputs:
-      version:
+      release-version:
         description: 'Version to release'
         required: false
         type: string
@@ -36,11 +36,11 @@ jobs:
       - name: Prepare version
         id: prepare-version
         run: |
-          if test -z "${{inputs.version}}"
+          if test -z "${{inputs.release-version}}"
           then
           mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false
           else
-          mvn versions:set -DnewVersion=${{inputs.version}} -DgenerateBackupPoms=false
+          mvn versions:set -DnewVersion=${{inputs.release-version}} -DgenerateBackupPoms=false
           fi          
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
           echo "semantic-version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_OUTPUT

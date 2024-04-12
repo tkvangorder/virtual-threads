@@ -2,7 +2,7 @@ name: Prepare Release
 on:
   workflow_dispatch:
     inputs:
-      version:
+      release-version:
         description: 'Version to release'
         required: false
         default: ''
@@ -13,7 +13,7 @@ jobs:
     name: Create Semantic Version
     uses: ./.github/workflows/java-prepare-release.yml
     with:
-      initial-version: ${{github.event.inputs.version}}
+      release-version: ${{github.event.inputs.release-version}}
     secrets: inherit
   echo-version:
     runs-on: ubuntu-latest
