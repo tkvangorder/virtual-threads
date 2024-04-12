@@ -11,6 +11,8 @@ permissions:
 jobs:
   prepare-release:
     runs-on: ubuntu-latest
+    outputs:
+      semantic-version: ${{ steps.prepare-version.outputs.semantic-version }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21 for x64
