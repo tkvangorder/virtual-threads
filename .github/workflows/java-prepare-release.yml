@@ -16,7 +16,9 @@ on:
         type: string
         default: ''
     outputs:
-      semantic-version: ${{ jobs.prepare-release.outputs.semantic-version }}
+      semantic-version:
+        description: 'The semantic version derived/used for the release'
+        value: ${{ jobs.prepare-release.outputs.semantic-version }}
 
 jobs:
   prepare-release:
