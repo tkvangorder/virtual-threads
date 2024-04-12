@@ -50,5 +50,6 @@ jobs:
         run: |
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
+          git pull
           git commit -am "Set next snapshot version"
           git push
