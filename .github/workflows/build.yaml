@@ -20,9 +20,12 @@ jobs:
           distribution: 'temurin'
           architecture: x64
       - name: Prepare version
+        id: prepare-version
         run: |
-          mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false 
+          mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false
+          git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
       - name: Commit version
+        if: steps.prepare-version.outputs.changed == 'true'
         run: |
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
