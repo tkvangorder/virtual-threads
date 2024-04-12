@@ -16,7 +16,7 @@ on:
         type: string
         default: ''
     outputs:
-      semantic-version: ${{ steps.prepare-version.outputs.semantic-version }}
+      semantic-version: ${{ jobs.prepare-release.outputs.semantic-version }}
 
 jobs:
   prepare-release:
