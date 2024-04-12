@@ -22,7 +22,12 @@ jobs:
       - name: Prepare version
         id: prepare-version
         run: |
+          if test -z "${{github.event.inputs.version}}"
+          then
           mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false
+          else
+          mvn versions:set -DnewVersion=${{github.event.inputs.version}} -DgenerateBackupPoms=false
+          fi          
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
       - name: Commit version
         if: steps.prepare-version.outputs.changed == 'true'
