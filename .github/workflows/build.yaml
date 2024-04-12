@@ -29,7 +29,7 @@ jobs:
           mvn versions:set -DnewVersion=${{github.event.inputs.version}} -DgenerateBackupPoms=false
           fi          
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
-          echo "semantic-version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`"
+          echo "semantic-version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`" >> $GITHUB_OUTPUT
       - name: Commit version
         if: steps.prepare-version.outputs.changed == 'true'
         run: |
@@ -43,4 +43,4 @@ jobs:
     steps:
       - name: echo man
         run: |
-          echo "The version is ${{steps.prepare-release.outputs.semantic-version }}"
+          echo "The version is ${{needs.prepare-release.outputs.semantic-version }}"
