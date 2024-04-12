@@ -22,3 +22,7 @@ jobs:
       - name: echo man
         run: |
           echo "The version is ${{needs.prepare-release.outputs.semantic-version }}"
+  prepare-next-snapshot:
+    name: Prepare Next Snapshot Version
+    uses: ./.github/workflows/java-prepare-next-snapshot.yml
+    secrets: inherit
