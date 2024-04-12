@@ -1,4 +1,4 @@
-name: Java Prepare Release
+name: (Java Reusable Workflow) - Prepare Release
 
 # -----------------------------------------------------------------------------------
 # This is a reusable workflow that can be used to adjust the version of a Maven-based

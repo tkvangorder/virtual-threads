@@ -1,4 +1,4 @@
-name: Java Prepare Next Snapshot Version
+name: (Java Reusable Workflow) - Prepare Next Snapshot Version
 
 # -----------------------------------------------------------------------------------
 # This is a reusable workflow that can be used to adjust the version of a Maven-based
