@@ -11,7 +11,7 @@ permissions:
 jobs:
   prepare-release:
     name: Create Semantic Version
-    uses: ./.github/actions/java-prepare-release.yml
+    uses: ./.github/actions/java-prepare-release.yml@main
     with:
       initial-version: ${{github.event.inputs.version}}
     secrets: inherit
