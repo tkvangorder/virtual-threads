@@ -71,7 +71,6 @@ jobs:
             fi
             # Now set the semantic version using the pom.xml file
             semantic_version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`
-
           else
             if [[ "$semantic_version" =~ .*-SNAPSHOT$ ]]
             then
@@ -80,18 +79,6 @@ jobs:
             is_release_build="true"
             fi
             mvn versions:set -DnewVersion=$semantic_version -DgenerateBackupPoms=false
-          fi
-          
-          # Sanity check to make sure the semantic version is compatible with the release flag.
-          if [[ "$semantic_version" = "*-SNAPSHOT" && $is_release_build == "true" ]]
-          then
-            echo "The provided semantic version is a snapshot version but the is-release-build flag is set to true. This is not allowed."
-            exit 1
-          fi
-          if [[ "$semantic_version" != "*-SNAPSHOT" && $is_release_build == "false" ]]
-          then
-            echo "The provided semantic version is not suffixed with '-SNAPSHOT' but the is-release-build flag is set to false. This is not allowed."
-            exit 1
           fi
           
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
