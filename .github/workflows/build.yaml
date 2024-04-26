@@ -2,18 +2,23 @@ name: Prepare Release
 on:
   workflow_dispatch:
     inputs:
-      release-version:
+      semantic-version:
         description: 'Version to release'
         required: false
         default: ''
+      is-release-build:
+        description: 'Is this a release build? (Ignored if semantic-version is provided)'
+        required: false
+        default: false
 permissions:
   contents: write
 jobs:
   prepare-release:
-    name: Create Semantic Version
-    uses: ./.github/workflows/java-prepare-release.yml
+    name: Prepare Version
+    uses: ./.github/workflows/java--maven-prepare-release.yml
     with:
-      release-version: ${{github.event.inputs.release-version}}
+      semantic-version: ${{github.event.inputs.release-version}}
+      is-release-build: ${{github.event.inputs.is-release-build}}
     secrets: inherit
   echo-version:
     runs-on: ubuntu-latest
@@ -22,10 +27,11 @@ jobs:
       - name: echo man
         run: |
           echo "The version is ${{needs.prepare-release.outputs.semantic-version }}"
-  prepare-next-snapshot:
-    name: Prepare Next Snapshot Version
-    needs:
-      - prepare-release
-      - echo-version
-    uses: ./.github/workflows/java-prepare-next-snapshot.yml
-    secrets: inherit
+          echo "Is this a release build? ${{needs.prepare-release.outputs.is-release-build}}"
+#  prepare-next-snapshot:
+#    name: Prepare Next Snapshot Version
+#    needs:
+#      - prepare-release
+#      - echo-version
+#    uses: ./.github/workflows/java-prepare-next-snapshot.yml
+#    secrets: inherit
