@@ -1,0 +1,100 @@
+name: Maven - Prepare Release
+
+# -----------------------------------------------------------------------------------
+# This is a reusable workflow that is used to set or derive the semantic version of
+# a Maven-based Java project. Additionally, it may adjust the version(s) of all
+# modules in the maven project and commit the changes to the repository when the desired
+# semantic version is different from the current version defined in the pom.xml
+#
+# If a semantic version input is provided this task will adjust the versions of all modules
+# in the Maven project and commit those changes. The "is-release-build" output is derived
+# from the provided semantic version when the version is suffixed with "-SNAPSHOT". This means
+# that the input "is-release-build" is ignored when a semantic version is provided.
+#
+# If no semantic version input is provided the task will extract the version from the pom.xml.
+# If the "is-release-build" input is "true" and the versions defined on the pom.xml are suffixed
+# with "-SNAPSHOT", the task will remove the "-SNAPSHOT" suffix from the version and commit the
+# changes.
+# -----------------------------------------------------------------------------------
+
+on:
+  workflow_call:
+    inputs:
+      semantic-version:
+        description: 'Version to release'
+        required: false
+        type: string
+        default: ''
+      java-version:
+        required: false
+        default: "17"
+        type: string
+        description: |
+          Java version needed to build (default: `17`)
+      is-release-build:
+        description: 'Indicates if the build is a release build'
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      semantic-version:
+        description: 'The semantic version derived/used for the release'
+        value: ${{ jobs.prepare-release.outputs.semantic-version }}
+      is-release-build:
+        description: 'Indicates if the build is a release build'
+        value: ${{ jobs.prepare-release.outputs.is-release-build }}
+
+jobs:
+  prepare-release:
+    runs-on: ${{ vars.EPHEMERAL_RUNNER_NAME }}
+    container:
+        image: docker-all.artifactory.8451.cloud/sds/core-images/java-gha-build-env/jdk${{inputs.java-version}}-maven3-gha-build-env:2.1
+    outputs:
+      semantic-version: ${{ steps.prepare-version.outputs.semantic-version }}
+      is-release-build: ${{ steps.determine-release-type.outputs.is-release-build }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.github-token || secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare version
+        id: prepare-version
+        shell: bash
+        run: |
+          git config --global --add safe.directory $PWD
+          semantic_version=${{inputs.semantic-version}}
+          if test -z "$semantic_version"
+          then
+            # If no version is provided, use the pom.xml file to determine the version 
+            is_release_build=${{ inputs.is-release-build }}
+            if [[ $is_release_build == "true" ]]
+            then
+              # If this is a release build, remove the snapshot suffix (if it exists on the pom)
+              mvn versions:set -DremoveSnapshot -DgenerateBackupPoms=false
+            fi
+            # Now set the semantic version using the pom.xml file
+            semantic_version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`
+
+          else
+            if [[ "$semantic_version" =~ .*-SNAPSHOT$ ]]
+            then
+            is_release_build="false"
+            else
+            is_release_build="true"
+            fi
+            mvn versions:set -DnewVersion=$semantic_version -DgenerateBackupPoms=false
+          fi
+
+          echo "semantic-version=$semantic_version"
+          echo "is-release-build=$is_release_build" 
+          
+          git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
+          echo "semantic-version=$semantic_version" >> $GITHUB_OUTPUT
+          echo "is-release-build=$is_release_build" >> $GITHUB_OUTPUT
+#      - name: Commit version
+#        if: steps.prepare-version.outputs.changed == 'true'
+#        shell: bash
+#        run: |
+#          git config user.name "$(git log -n 1 --pretty=format:%an)"
+#          git config user.email "$(git log -n 1 --pretty=format:%ae)"
+#          git commit -am "Prepare release version"
+#          git push
