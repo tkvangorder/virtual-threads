@@ -17,7 +17,7 @@ jobs:
     name: Prepare Version
     uses: ./.github/workflows/java-maven-prepare-release.yml
     with:
-      semantic-version: ${{github.event.inputs.release-version}}
+      semantic-version: ${{github.event.inputs.semantic-version}}
       is-release-build: ${{github.event.inputs.is-release-build == 'true'}}
     secrets: inherit
   echo-version:
