@@ -15,7 +15,7 @@ permissions:
 jobs:
   prepare-release:
     name: Prepare Version
-    uses: ./.github/workflows/java--maven-prepare-release.yml
+    uses: ./.github/workflows/java-maven-prepare-release.yml
     with:
       semantic-version: ${{github.event.inputs.release-version}}
       is-release-build: ${{github.event.inputs.is-release-build}}
