@@ -8,6 +8,7 @@ on:
         default: ''
       is-release-build:
         description: 'Is this a release build? (Ignored if semantic-version is provided)'
+        type: boolean
         required: false
         default: false
 permissions:
