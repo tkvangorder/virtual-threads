@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       semantic-version: ${{ steps.prepare-version.outputs.semantic-version }}
-      is-release-build: ${{ steps.determine-release-type.outputs.is-release-build }}
+      is-release-build: ${{ steps.prepare-version.outputs.is-release-build }}
     env:
       GITHUB_TOKEN: ${{ secrets.github-token || secrets.GITHUB_TOKEN }}
     steps:
@@ -81,9 +81,6 @@ jobs:
             fi
             mvn versions:set -DnewVersion=$semantic_version -DgenerateBackupPoms=false
           fi
-
-          echo "semantic-version=$semantic_version"
-          echo "is-release-build=$is_release_build" 
           
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
           echo "semantic-version=$semantic_version" >> $GITHUB_OUTPUT
