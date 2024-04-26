@@ -82,6 +82,18 @@ jobs:
             mvn versions:set -DnewVersion=$semantic_version -DgenerateBackupPoms=false
           fi
           
+          # Sanity check to make sure the semantic version is compatible with the release flag.
+          if [[ "$semantic_version" = "*-SNAPSHOT" && $is_release_build == "true" ]]
+          then
+            echo "The provided semantic version is a snapshot version but the is-release-build flag is set to true. This is not allowed."
+            exit 1
+          fi
+          if [[ "$semantic_version" != "*-SNAPSHOT" && $is_release_build == "false" ]]
+          then
+            echo "The provided semantic version is not suffixed with '-SNAPSHOT' but the is-release-build flag is set to false. This is not allowed."
+            exit 1
+          fi
+          
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
           echo "semantic-version=$semantic_version" >> $GITHUB_OUTPUT
           echo "is-release-build=$is_release_build" >> $GITHUB_OUTPUT
