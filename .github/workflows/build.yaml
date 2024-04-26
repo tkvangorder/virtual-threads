@@ -8,7 +8,6 @@ on:
         default: ''
       is-release-build:
         description: 'Is this a release build? (Ignored if semantic-version is provided)'
-        type: boolean
         required: false
         default: false
 permissions:
@@ -19,7 +18,7 @@ jobs:
     uses: ./.github/workflows/java-maven-prepare-release.yml
     with:
       semantic-version: ${{github.event.inputs.release-version}}
-      is-release-build: true
+      is-release-build: ${{github.event.inputs.is-release-build == 'true'}}
     secrets: inherit
   echo-version:
     runs-on: ubuntu-latest
