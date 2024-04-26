@@ -19,7 +19,7 @@ jobs:
     uses: ./.github/workflows/java-maven-prepare-release.yml
     with:
       semantic-version: ${{github.event.inputs.release-version}}
-      is-release-build: ${{github.event.inputs.is-release-build}}
+      is-release-build: false
     secrets: inherit
   echo-version:
     runs-on: ubuntu-latest
