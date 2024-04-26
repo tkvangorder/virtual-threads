@@ -46,9 +46,7 @@ on:
 
 jobs:
   prepare-release:
-    runs-on: ${{ vars.EPHEMERAL_RUNNER_NAME }}
-    container:
-        image: docker-all.artifactory.8451.cloud/sds/core-images/java-gha-build-env/jdk${{inputs.java-version}}-maven3-gha-build-env:2.1
+    runs-on: ubuntu-latest
     outputs:
       semantic-version: ${{ steps.prepare-version.outputs.semantic-version }}
       is-release-build: ${{ steps.determine-release-type.outputs.is-release-build }}
