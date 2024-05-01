@@ -29,6 +29,7 @@ jobs:
         run: |
           echo "The version is ${{needs.prepare-release.outputs.semantic-version }}"
           echo "Is this a release build? ${{needs.prepare-release.outputs.is-release-build}}"
+          echo "The release SHA is ${{needs.prepare-release.outputs.release-sha}}"
 #  prepare-next-snapshot:
 #    name: Prepare Next Snapshot Version
 #    needs:
