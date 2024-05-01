@@ -103,8 +103,9 @@ jobs:
             git config user.email "$(git log -n 1 --pretty=format:%ae)"
             git commit -am "Prepare release version"
             #git push
-          fi          
-          echo "release-sha=`git rev-parse HEAD`" >> $GITHUB_OUTPUT
+          fi      
+          release-sha=`git rev-parse HEAD`
+          echo "release-sha=$release-sha" >> $GITHUB_OUTPUT
           
           echo "Release SHA : $release-sha"
           echo "Github SHA  : ${{ github.sha }}"
