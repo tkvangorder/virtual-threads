@@ -97,7 +97,7 @@ jobs:
         id: commit-version
         shell: bash
         run: |
-          if [[ "${{ steps.prepare-release.outputs.changed }}" == "true" ]]
+          if [[ "${{ steps.prepare-version.outputs.changed }}" == "true" ]]
           then
             git config user.name "$(git log -n 1 --pretty=format:%an)"
             git config user.email "$(git log -n 1 --pretty=format:%ae)"
