@@ -102,7 +102,7 @@ jobs:
             git config user.name "$(git log -n 1 --pretty=format:%an)"
             git config user.email "$(git log -n 1 --pretty=format:%ae)"
             git commit -am "Prepare release version"
-#            git push
+            #git push
           fi          
           echo "release-sha=`git rev-parse HEAD`" >> $GITHUB_OUTPUT
           
