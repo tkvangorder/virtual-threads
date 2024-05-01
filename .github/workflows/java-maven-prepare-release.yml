@@ -21,7 +21,7 @@ on:
   workflow_call:
     inputs:
       semantic-version:
-        description: 'Version to release'
+        description: 'Version to release, overrides the existing version in the pom.xml'
         required: false
         type: string
         default: ''
@@ -43,18 +43,21 @@ on:
       is-release-build:
         description: 'Indicates if the build is a release build'
         value: ${{ jobs.prepare-release.outputs.is-release-build }}
-
+      release-sha:
+        description: 'The SHA of the commit that was created to prepare the release'
+        value: ${{ jobs.prepare-release.outputs.release-sha }}
 jobs:
   prepare-release:
     runs-on: ubuntu-latest
     outputs:
       semantic-version: ${{ steps.prepare-version.outputs.semantic-version }}
       is-release-build: ${{ steps.prepare-version.outputs.is-release-build }}
+      release-sha: ${{ steps.commit-version.outputs.release-sha }}
     env:
       GITHUB_TOKEN: ${{ secrets.github-token || secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Prepare version
+      - name: Prepare Semantic Version
         id: prepare-version
         shell: bash
         run: |
@@ -80,15 +83,25 @@ jobs:
             fi
             mvn versions:set -DnewVersion=$semantic_version -DgenerateBackupPoms=false
           fi
-          
+
+          echo "The semantic version is  $semantic_version"
+          echo "Is this a release build? $is_release_build"
+
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
           echo "semantic-version=$semantic_version" >> $GITHUB_OUTPUT
           echo "is-release-build=$is_release_build" >> $GITHUB_OUTPUT
-#      - name: Commit version
-#        if: steps.prepare-version.outputs.changed == 'true'
-#        shell: bash
-#        run: |
-#          git config user.name "$(git log -n 1 --pretty=format:%an)"
-#          git config user.email "$(git log -n 1 --pretty=format:%ae)"
-#          git commit -am "Prepare release version"
-#          git push
+      - name: Commit version
+        id: commit-version
+        shell: bash
+        run: |
+          if [[ ${{ steps.prepare-release.outputs.changed }} == "true" ]]
+          then
+            git config user.name "$(git log -n 1 --pretty=format:%an)"
+            git config user.email "$(git log -n 1 --pretty=format:%ae)"
+            git commit -am "Prepare release version"
+            git push
+          fi          
+          echo "release-sha=`git rev-parse HEAD`" >> $GITHUB_OUTPUT
+          
+          echo "Release SHA : $release-sha"
+          echo "Github SHA  : ${{ github.sha }}"
