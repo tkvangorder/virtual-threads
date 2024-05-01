@@ -84,25 +84,25 @@ jobs:
             mvn versions:set -DnewVersion=$semantic_version -DgenerateBackupPoms=false
           fi
 
-          chaged=`git diff --quiet . || echo "true"`
+          changed=`git diff --quiet . || echo "true"`
 
           echo "The semantic version is  $semantic_version"
           echo "Is this a release build? $is_release_build"
-          echo "changed=$changed" >> $GITHUB_OUTPUT
+          echo "Changes? : $changed"
           
           echo "semantic-version=$semantic_version" >> $GITHUB_OUTPUT
           echo "is-release-build=$is_release_build" >> $GITHUB_OUTPUT
-          echo "Changes? : $changed"
+          echo "changed=$changed" >> $GITHUB_OUTPUT
       - name: Commit version
         id: commit-version
         shell: bash
         run: |
-          if [[ ${{ steps.prepare-release.outputs.changed }} == "true" ]]
+          if [[ "${{ steps.prepare-release.outputs.changed }}" == "true" ]]
           then
             git config user.name "$(git log -n 1 --pretty=format:%an)"
             git config user.email "$(git log -n 1 --pretty=format:%ae)"
             git commit -am "Prepare release version"
-            git push
+#            git push
           fi          
           echo "release-sha=`git rev-parse HEAD`" >> $GITHUB_OUTPUT
           
