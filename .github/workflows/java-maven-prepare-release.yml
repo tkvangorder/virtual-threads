@@ -104,8 +104,8 @@ jobs:
             git commit -am "Prepare release version"
             #git push
           fi      
-          release-sha=`git rev-parse HEAD`
-          echo "release-sha=$release-sha" >> $GITHUB_OUTPUT
+          release_sha=`git rev-parse HEAD`
+          echo "release-sha=$release_sha" >> $GITHUB_OUTPUT
           
-          echo "Release SHA : $release-sha"
+          echo "Release SHA : $release_sha"
           echo "Github SHA  : ${{ github.sha }}"
