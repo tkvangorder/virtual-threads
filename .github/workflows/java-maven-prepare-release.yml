@@ -84,12 +84,15 @@ jobs:
             mvn versions:set -DnewVersion=$semantic_version -DgenerateBackupPoms=false
           fi
 
+          chaged=`git diff --quiet . || echo "true"`
+
           echo "The semantic version is  $semantic_version"
           echo "Is this a release build? $is_release_build"
-
-          git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
+          echo "changed=$changed" >> $GITHUB_OUTPUT
+          
           echo "semantic-version=$semantic_version" >> $GITHUB_OUTPUT
           echo "is-release-build=$is_release_build" >> $GITHUB_OUTPUT
+          echo "Changes? : $changed"
       - name: Commit version
         id: commit-version
         shell: bash
