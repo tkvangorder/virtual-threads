@@ -1,8 +1,7 @@
-package org.threading.http;
+package org.threading.virtual.http;
 
 import lombok.extern.slf4j.Slf4j;
 import org.threading.utils.TestHarness;
-import org.threading.utils.Utils;
 
 import java.io.IOException;
 import java.net.URI;

@@ -1,4 +1,4 @@
-package org.threading.simple;
+package org.threading.virtual.simple;
 
 import lombok.extern.slf4j.Slf4j;
 import org.threading.utils.TestHarness;
