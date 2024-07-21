@@ -1,6 +1,7 @@
 package org.threading.coordinate;
 
 import org.threading.coordinate.model.*;
+import org.threading.utils.Utils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,16 +26,16 @@ public class StoreService {
    * If the fail parameter is true, the method will throw a RuntimeException.
    *
    * @param userId The user ID. (really just a placeholder, this method doesn't actually use it)
-   * @param sleepTime The amount of time to sleep before returning the cart.
+   * @param sleepTimeSeconds The amount of time to sleep before returning the cart.
    * @param fail If true, the method will throw a RuntimeException.
    * @return The user's cart.
    */
-  public Cart getUserCart(String userId, int sleepTime, boolean fail) throws InterruptedException {
-    Thread.sleep(sleepTime);
+  public Cart getUserCart(String userId, int sleepTimeSeconds, boolean fail) {
+    Utils.sleep(sleepTimeSeconds);
     if (fail) {
       throw new RuntimeException("Failed to get cart");
     }
-    return cart;
+    return cart.withId(userId);
   }
 
   /**
@@ -42,16 +43,16 @@ public class StoreService {
    * If the fail parameter is true, the method will throw a RuntimeException.
    *
    * @param userId The user ID. (really just a placeholder, this method doesn't actually use it)
-   * @param sleepTime The amount of time to sleep before returning the orders.
+   * @param sleepTimeSeconds The amount of time (in seconds) to sleep before returning the orders.
    * @param fail If true, the method will throw a RuntimeException.
    * @return The user's orders.
    */
-  public List<Order> getUserOrders(String userId, int sleepTime, boolean fail) throws InterruptedException {
-    Thread.sleep(sleepTime);
+  public List<Order> getUserOrders(String userId, int sleepTimeSeconds, boolean fail) {
+    Utils.sleep(sleepTimeSeconds);
     if (fail) {
       throw new RuntimeException("Failed to get orders");
     }
-    return orders;
+    return orders.stream().map(order -> order.withUserId(userId)).toList();
   }
 
   private static Cart generateCart() {
