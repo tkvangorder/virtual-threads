@@ -36,7 +36,7 @@ public class BlockingTasks {
     runExperiments(900, 900_000, 0);
 
     //Ah oh, the VM is not happy with 9000 traditional threads.
-    runExperiments(9000, 0, 0);
+    runExperiments(90_000, 0, 0);
 
     Utils.waitForPrompt("Press enter to exit");
   }

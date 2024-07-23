@@ -35,7 +35,7 @@ public class CpuIntensiveTasks {
     }
 
     System.out.println();
-    Utils.waitForPrompt("Press enter to start " + taskCount + " CPU intensive tasks using a traditional threads.");
+    Utils.waitForPrompt("Press enter to start " + taskCount + " CPU intensive tasks using a virtual threads.");
 
     try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
       TestHarness.run("CPU Intensive, Virtual Threads", executorService,
