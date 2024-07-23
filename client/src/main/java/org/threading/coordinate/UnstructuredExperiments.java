@@ -1,6 +1,5 @@
-package org.threading.coordinate.yolo;
+package org.threading.coordinate;
 
-import org.threading.coordinate.StoreService;
 import org.threading.coordinate.model.Cart;
 import org.threading.coordinate.model.Order;
 import org.threading.coordinate.model.UserDetails;
@@ -20,8 +19,7 @@ public class UnstructuredExperiments {
 //    runExperiment(this::futures, "Using Futures");
 //    runExperiment(this::futuresAndTimeouts, "Using Futures with Timeouts");
 //    runExperiment(this::completableFutures, "Using Completable Futures");
-    runExperiment(this::completableFuturesFailOnAny, "Using Completable Futures with failure handling");
-
+//    runExperiment(this::completableFuturesFailOnAny, "Using Completable Futures with failure handling");
 //    parentChildMess();
   }
 
@@ -35,10 +33,10 @@ public class UnstructuredExperiments {
     try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
 
       Future<Cart> cartFuture = executorService.submit(
-          () -> storeService.getUserCart("fred", 1, true)
+          () -> storeService.getUserCart("fred", 1, false)
       );
       Future<List<Order>> ordersFuture = executorService.submit(
-          () -> storeService.getUserOrders("fred", 4, false)
+          () -> storeService.getUserOrders("fred", 3, false)
       );
 
       return new UserDetails("fred", cartFuture.get(), ordersFuture.get());
@@ -64,8 +62,8 @@ public class UnstructuredExperiments {
       try {
         return new UserDetails(
             "fred",
-            cartFuture.get(1, TimeUnit.SECONDS),
-            ordersFuture.get(1, TimeUnit.SECONDS)
+            cartFuture.get(2, TimeUnit.SECONDS),
+            ordersFuture.get(2, TimeUnit.SECONDS)
         );
       } catch (TimeoutException e) {
         System.out.println("Timed out waiting for futures to complete");
@@ -84,7 +82,7 @@ public class UnstructuredExperiments {
     try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
 
       CompletableFuture<Cart> cartFuture = CompletableFuture.supplyAsync(
-          () -> storeService.getUserCart("fred", 1, true), executorService
+          () -> storeService.getUserCart("fred", 1, false), executorService
       );
       CompletableFuture<List<Order>> ordersFuture = CompletableFuture.supplyAsync(
           () -> storeService.getUserOrders("fred", 4, false), executorService
