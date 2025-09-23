@@ -16,9 +16,9 @@ public class UnstructuredExperiments {
 
   void main() {
 
-//    runExperiment(this::futures, "Using Futures");
+    runExperiment(this::futures, "Using Futures");
 //    runExperiment(this::futuresAndTimeouts, "Using Futures with Timeouts");
-//    runExperiment(this::completableFutures, "Using Completable Futures");
+//      runExperiment(this::completableFutures, "Using Completable Futures");
 //    runExperiment(this::completableFuturesFailOnAny, "Using Completable Futures with failure handling");
 //    parentChildMess();
   }
@@ -33,7 +33,7 @@ public class UnstructuredExperiments {
     try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
 
       Future<Cart> cartFuture = executorService.submit(
-          () -> storeService.getUserCart("fred", 1, false)
+          () -> storeService.getUserCart("fred", 1, true)
       );
       Future<List<Order>> ordersFuture = executorService.submit(
           () -> storeService.getUserOrders("fred", 3, false)
@@ -82,7 +82,7 @@ public class UnstructuredExperiments {
     try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
 
       CompletableFuture<Cart> cartFuture = CompletableFuture.supplyAsync(
-          () -> storeService.getUserCart("fred", 1, false), executorService
+          () -> storeService.getUserCart("fred", 1, true), executorService
       );
       CompletableFuture<List<Order>> ordersFuture = CompletableFuture.supplyAsync(
           () -> storeService.getUserOrders("fred", 4, false), executorService
@@ -124,6 +124,7 @@ public class UnstructuredExperiments {
         CompletableFuture.anyOf(failure, CompletableFuture.allOf(cartFuture, ordersFuture)).join();
       } catch (Exception e) {
         System.out.println("Should get here is any of the futures fail!");
+        executorService.shutdownNow();
         throw e;
       }
       return new UserDetails("fred", cartFuture.get(), ordersFuture.get());

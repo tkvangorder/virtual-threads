@@ -23,7 +23,7 @@ public class Utils {
 
   public static String timeElapsed(Instant start) {
     Duration duration = Duration.between(start, Instant.now());
-    return StringTemplate.STR."\{duration.toSeconds()}s \{duration.toMillisPart()}ms";
+    return duration.toSeconds() + "s " + duration.toMillisPart() + "ms";
   }
 
   public static void sleep(long sleepTimeSeconds) {

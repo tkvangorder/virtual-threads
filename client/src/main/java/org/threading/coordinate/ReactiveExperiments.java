@@ -5,6 +5,7 @@ import org.threading.coordinate.model.Order;
 import org.threading.coordinate.model.UserDetails;
 import org.threading.utils.CheckedSupplier;
 import org.threading.utils.Utils;
+import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -16,7 +17,7 @@ public class ReactiveExperiments {
 
   void main() {
     //BlockHound.install();
-    runExperiment(this::reactive, "Using Reactor to fetch Cart and Orders in parallel");
+    //runExperiment(this::reactive, "Using Reactor to fetch Cart and Orders in parallel");
     runExperiment(this::reactiveWithTimeouts, "Using Reactor to fetch Cart and Orders in parallel with timeouts");
   }
 
@@ -26,7 +27,7 @@ public class ReactiveExperiments {
   public UserDetails reactive() {
 
     Mono<Cart> cartMono = Mono
-        .fromCallable(() -> storeService.getUserCart("fred", 1, false))
+        .fromCallable(() -> storeService.getUserCart("fred", 1, true))
         .subscribeOn(Schedulers.parallel());
 
     Mono<List<Order>> ordersMono = Mono

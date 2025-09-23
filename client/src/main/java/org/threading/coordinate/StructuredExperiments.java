@@ -6,6 +6,7 @@ import org.threading.coordinate.model.UserDetails;
 import org.threading.utils.CheckedSupplier;
 import org.threading.utils.Utils;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.StructuredTaskScope;
@@ -19,7 +20,7 @@ public class StructuredExperiments {
 //    runExperiment(this::structured, "Using Structured Concurrency to fetch Cart and Orders in parallel", true);
 //    runExperiment(this::structuredWithTimeouts, "Using Structured Concurrency and setting timeouts", true);
 //    runExperiment(this::structuredTreeOfWork, "Using Structured Concurrency to fetch multiple user details in parallel", false);
-    runExperiment(this::firstToSucceed, "Using Structured Concurrency to fetch the first successful request", true);
+//    runExperiment(this::firstToSucceed, "Using Structured Concurrency to fetch the first successful request", true);
 
   }
 
@@ -29,14 +30,14 @@ public class StructuredExperiments {
    */
   public UserDetails structured() throws Exception {
 
-    try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    try (var scope = StructuredTaskScope.open()) {
       StructuredTaskScope.Subtask<Cart> cartTask = scope.fork(
-          () -> storeService.getUserCart("fred", 1, true)
+          () -> storeService.getUserCart("fred", 1, false)
       );
       StructuredTaskScope.Subtask<List<Order>> ordersTask = scope.fork(
           () -> storeService.getUserOrders("fred", 3, false)
       );
-      scope.join().throwIfFailed();
+      scope.join();
 
       return new UserDetails("fred", cartTask.get(), ordersTask.get());
     }
@@ -48,16 +49,15 @@ public class StructuredExperiments {
    */
   public UserDetails structuredWithTimeouts() throws Exception {
 
-    try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.awaitAllSuccessfulOrThrow(),
+        config -> config.withTimeout(Duration.ofSeconds(2)))) {
       StructuredTaskScope.Subtask<Cart> cartTask = scope.fork(
           () -> storeService.getUserCart("fred", 1, false)
       );
       StructuredTaskScope.Subtask<List<Order>> ordersTask = scope.fork(
           () -> storeService.getUserOrders("fred", 3, false)
       );
-      scope
-          .joinUntil(Instant.now().plusSeconds(2))
-          .throwIfFailed();
+      scope.join();
 
       return new UserDetails("fred", cartTask.get(), ordersTask.get());
     }
@@ -68,13 +68,13 @@ public class StructuredExperiments {
    */
   public List<UserDetails> structuredTreeOfWork() throws Exception {
 
-    try (var topLevel = new StructuredTaskScope.ShutdownOnFailure()) {
+    try (var topLevel = StructuredTaskScope.open(StructuredTaskScope.Joiner.awaitAllSuccessfulOrThrow())) {
 
       var userDetailsTasks = List.of("fred", "sean", "priya").stream()
           .map(userId -> topLevel.fork(() -> getUserDetails(userId, 1)))
           .toList();
 
-      topLevel.join().throwIfFailed();
+      topLevel.join();
 
       return userDetailsTasks.stream()
           .map(StructuredTaskScope.Subtask::get)
@@ -87,27 +87,27 @@ public class StructuredExperiments {
    */
   public UserDetails firstToSucceed() throws Exception {
 
-    try (var topLevel = new StructuredTaskScope.ShutdownOnSuccess<UserDetails>()) {
+    try (var topLevel = StructuredTaskScope.open(StructuredTaskScope.Joiner.<UserDetails>anySuccessfulResultOrThrow())) {
 
       var userDetailsTasks = Stream.of("fred", "sam", "fred")
           .map(userId -> topLevel.fork(() -> getUserDetails(userId, "sam".equals(userId) ? 1 : 2)))
           .toList();
 
-      topLevel.join();
-      System.out.println("First task to succeed: " + topLevel.result().userId());
-      return topLevel.result();
+      var result = topLevel.join();
+      System.out.println("First task to succeed: " + result);
+      return result;
     }
   }
 
   private UserDetails getUserDetails(String userId, int sleepTimeSeconds) throws Exception {
-    try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.awaitAllSuccessfulOrThrow())) {
       StructuredTaskScope.Subtask<Cart> cartTask = scope.fork(
           () -> storeService.getUserCart(userId, sleepTimeSeconds, false)
       );
       StructuredTaskScope.Subtask<List<Order>> ordersTask = scope.fork(
           () -> storeService.getUserOrders(userId, sleepTimeSeconds, false)
       );
-      scope.join().throwIfFailed();
+      scope.join();
 
       return new UserDetails(userId, cartTask.get(), ordersTask.get());
     }
