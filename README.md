@@ -98,3 +98,8 @@ difficult to debug when compared to imperative programming.
 The last set of experiments demonstrates the various capabilities of Project Loom's StructuredTaskScope. This API provides
 a simplified way to run tasks and subtasks concurrently, has robust error handling and provides strategies for completing/
 cancelling the tasks.
+
+### Bonus material
+
+- [debugging Virtual Threads at Netflix](https://netflixtechblog.com/java-21-virtual-threads-dude-wheres-my-lock-3052540e231d)
+ 
